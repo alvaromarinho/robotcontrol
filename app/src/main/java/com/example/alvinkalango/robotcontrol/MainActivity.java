@@ -27,7 +27,7 @@ public class MainActivity extends Activity implements OnClickListener {
     Button Backward;
     Button Left;
     Button Right;
-    ToggleButton Connect;
+    Button Connect;
     ToggleButton OnOff;
     TextView Result;
     private String dataToSend;
@@ -51,7 +51,7 @@ public class MainActivity extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Connect = (ToggleButton) findViewById(R.id.connect);
+        Connect = (Button) findViewById(R.id.connect);
         OnOff = (ToggleButton) findViewById(R.id.tgOnOff);
 
         Forward = (Button) findViewById(R.id.buttonForward);
@@ -71,16 +71,15 @@ public class MainActivity extends Activity implements OnClickListener {
     public void onClick(View control) {
         switch (control.getId()) {
             case R.id.connect:
-                if (Connect.isChecked()) {
-                    Connect();
+                if (Connect()) {
                     Connect.setText("Conectado");
                     Connect.setEnabled(false);
                     Toast.makeText(getApplicationContext(),
                             "Conectado!", Toast.LENGTH_SHORT).show();
                 }
-                else if (!Connect.isChecked()){
+                else {
                     Toast.makeText(getApplicationContext(),
-                            "Desconectado!", Toast.LENGTH_SHORT).show();
+                            "Não foi possivel conectar", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.tgOnOff:
@@ -109,7 +108,7 @@ public class MainActivity extends Activity implements OnClickListener {
         }
     }
 
-    public void Connect() {
+    public boolean Connect() {
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         mBluetoothAdapter.cancelDiscovery();
         try {
@@ -120,14 +119,13 @@ public class MainActivity extends Activity implements OnClickListener {
             try {
                 btSocket.close();
             } catch (IOException e2) {
-                Toast.makeText(getApplicationContext(), "Unable to end the connection",
-                        Toast.LENGTH_SHORT).show();
+                return false;
             }
-            Toast.makeText(getApplicationContext(), "Socket creation failed",
-                    Toast.LENGTH_SHORT).show();
+            return false;
         }
 
         beginListenForData();
+        return true;
     }
 
     private void writeData(String data) {
