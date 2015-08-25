@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.view.MotionEvent;
 import android.view.View.OnClickListener;
 import android.os.Bundle;
 import android.os.Handler;
@@ -62,6 +63,33 @@ public class MainActivity extends Activity implements OnClickListener {
         Connect.setOnClickListener((View.OnClickListener) this);
         OnOff.setOnClickListener((View.OnClickListener) this);
 
+        Forward.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        dataToSend = "F";
+                        writeData(dataToSend);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        dataToSend = "S";
+                        writeData(dataToSend);
+                        break;
+                }
+                return false;
+            }
+        });
+
+        Backward.setOnClickListener((View.OnClickListener) this);
+        Left.setOnClickListener((View.OnClickListener) this);
+        Right.setOnClickListener((View.OnClickListener) this);
+
+        OnOff.setEnabled(false);
+        Forward.setEnabled(false);
+        Backward.setEnabled(false);
+        Left.setEnabled(false);
+        Right.setEnabled(false);
+
         CheckBt();
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
 
@@ -76,6 +104,11 @@ public class MainActivity extends Activity implements OnClickListener {
                     Connect.setEnabled(false);
                     Toast.makeText(getApplicationContext(),
                             "Conectado!", Toast.LENGTH_SHORT).show();
+                    OnOff.setEnabled(true);
+                    Forward.setEnabled(true);
+                    Backward.setEnabled(true);
+                    Left.setEnabled(true);
+                    Right.setEnabled(true);
                 }
                 else {
                     Toast.makeText(getApplicationContext(),
@@ -90,6 +123,18 @@ public class MainActivity extends Activity implements OnClickListener {
                     dataToSend = "0";
                     writeData(dataToSend);
                 }
+                break;
+            case R.id.buttonBackward:
+                dataToSend = "B";
+                writeData(dataToSend);
+                break;
+            case R.id.buttonLeft:
+                dataToSend = "L";
+                writeData(dataToSend);
+                break;
+            case R.id.buttonRight:
+                dataToSend = "R";
+                writeData(dataToSend);
                 break;
         }
     }
