@@ -30,6 +30,8 @@ public class MainActivity extends Activity implements OnClickListener {
     Button Right;
     Button Connect;
     ToggleButton OnOff;
+    Button Buzzer;
+
     TextView Result;
     private String dataToSend;
 
@@ -54,6 +56,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
         Connect = (Button) findViewById(R.id.connect);
         OnOff = (ToggleButton) findViewById(R.id.tgOnOff);
+        Buzzer = (Button) findViewById(R.id.buzzer);
 
         Forward = (Button) findViewById(R.id.buttonForward);
         Backward = (Button) findViewById(R.id.buttonBackward);
@@ -62,6 +65,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
         Connect.setOnClickListener((View.OnClickListener) this);
         OnOff.setOnClickListener((View.OnClickListener) this);
+        Buzzer.setOnClickListener((View.OnClickListener) this);
 
         Forward.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -85,6 +89,7 @@ public class MainActivity extends Activity implements OnClickListener {
         Right.setOnClickListener((View.OnClickListener) this);
 
         OnOff.setEnabled(false);
+        Buzzer.setEnabled(false);
         Forward.setEnabled(false);
         Backward.setEnabled(false);
         Left.setEnabled(false);
@@ -105,6 +110,7 @@ public class MainActivity extends Activity implements OnClickListener {
                     Toast.makeText(getApplicationContext(),
                             "Conectado!", Toast.LENGTH_SHORT).show();
                     OnOff.setEnabled(true);
+                    Buzzer.setEnabled(true);
                     Forward.setEnabled(true);
                     Backward.setEnabled(true);
                     Left.setEnabled(true);
@@ -124,16 +130,8 @@ public class MainActivity extends Activity implements OnClickListener {
                     writeData(dataToSend);
                 }
                 break;
-            case R.id.buttonBackward:
-                dataToSend = "B";
-                writeData(dataToSend);
-                break;
-            case R.id.buttonLeft:
-                dataToSend = "L";
-                writeData(dataToSend);
-                break;
-            case R.id.buttonRight:
-                dataToSend = "R";
+            case R.id.buzzer:
+                dataToSend = "Z";
                 writeData(dataToSend);
                 break;
         }
