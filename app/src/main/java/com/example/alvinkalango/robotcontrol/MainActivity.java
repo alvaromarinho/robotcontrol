@@ -84,7 +84,7 @@ public class MainActivity extends Activity {
         Connect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (Connect.isChecked()) {
+                if (isChecked) {
                     if (Connect()) {
                         Connect.setEnabled(false);
                         Toast.makeText(getApplicationContext(),
@@ -111,7 +111,7 @@ public class MainActivity extends Activity {
         Navigate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (Navigate.isChecked()) {
+                if (isChecked) {
                     dataToSend = "N";
                     writeData(dataToSend);
 
@@ -120,7 +120,8 @@ public class MainActivity extends Activity {
                     Left.setEnabled(false);
                     Right.setEnabled(false);
 
-                } else if (!Navigate.isChecked()) {
+                }
+                else {
                     dataToSend = "0";
                     writeData(dataToSend);
                 }
