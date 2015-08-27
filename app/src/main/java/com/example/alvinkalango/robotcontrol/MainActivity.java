@@ -82,7 +82,6 @@ public class MainActivity extends Activity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (Connect.isChecked()) {
                     if (Connect()) {
-                        Connect.setText("Conectado");
                         Connect.setEnabled(false);
                         Toast.makeText(getApplicationContext(),
                                 "Conectado!", Toast.LENGTH_SHORT).show();
