@@ -1,11 +1,11 @@
 package com.example.alvinkalango.robotcontrol;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View.OnClickListener;
 import android.os.Bundle;
@@ -15,22 +15,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
-    Button Forward;
-    Button Backward;
-    Button Left;
-    Button Right;
+    ImageButton Forward;
+    ImageButton Backward;
+    ImageButton Left;
+    ImageButton Right;
+
     Button Buzzer;
     TextView BuzzerText;
 
@@ -64,10 +65,11 @@ public class MainActivity extends Activity {
         Navigate = (Switch) findViewById(R.id.navigate);
         Led = (Switch) findViewById(R.id.led);
 
-        Forward = (Button) findViewById(R.id.buttonForward);
-        Backward = (Button) findViewById(R.id.buttonBackward);
-        Left = (Button) findViewById(R.id.buttonLeft);
-        Right = (Button) findViewById(R.id.buttonRight);
+        Forward = (ImageButton) findViewById(R.id.buttonForward);
+        Backward = (ImageButton) findViewById(R.id.buttonBackward);
+        Left = (ImageButton) findViewById(R.id.buttonLeft);
+        Right = (ImageButton) findViewById(R.id.buttonRight);
+
         Buzzer = (Button) findViewById(R.id.buzzer);
         BuzzerText = (TextView) findViewById(R.id.textView);
 
@@ -88,7 +90,7 @@ public class MainActivity extends Activity {
                     if (Connect()) {
                         Connect.setEnabled(false);
                         Toast.makeText(getApplicationContext(),
-                                "Conectado!", Toast.LENGTH_SHORT).show();
+                                "Connected!", Toast.LENGTH_SHORT).show();
                         Navigate.setEnabled(true);
                         Led.setEnabled(true);
                         Buzzer.setEnabled(true);
@@ -102,7 +104,7 @@ public class MainActivity extends Activity {
                     } else {
                         Connect.setChecked(false);
                         Toast.makeText(getApplicationContext(),
-                                "Não foi possivel conectar", Toast.LENGTH_SHORT).show();
+                                "Could not connect!", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -114,6 +116,8 @@ public class MainActivity extends Activity {
                 if (isChecked) {
                     dataToSend = "N";
                     writeData(dataToSend);
+                    Toast.makeText(getApplicationContext(),
+                            "Auto mode activated!", Toast.LENGTH_SHORT).show();
 
                     Forward.setEnabled(false);
                     Backward.setEnabled(false);
@@ -122,8 +126,15 @@ public class MainActivity extends Activity {
 
                 }
                 else {
-                    dataToSend = "0";
+                    dataToSend = "S";
                     writeData(dataToSend);
+                    Toast.makeText(getApplicationContext(),
+                            "Auto mode deactivated", Toast.LENGTH_SHORT).show();
+
+                    Forward.setEnabled(true);
+                    Backward.setEnabled(true);
+                    Left.setEnabled(true);
+                    Right.setEnabled(true);
                 }
             }
         });
@@ -225,7 +236,7 @@ public class MainActivity extends Activity {
 
         if (mBluetoothAdapter == null) {
             Toast.makeText(getApplicationContext(),
-                    "Bluetooth null !", Toast.LENGTH_SHORT).show();
+                    "Bluetooth null!", Toast.LENGTH_SHORT).show();
         }
 
         if (!mBluetoothAdapter.isEnabled()) {

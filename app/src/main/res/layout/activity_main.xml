@@ -7,7 +7,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity"
-    android:background="#f6f6f6" >
+    android:background="#f6f6f6">
 
     <Switch
         android:id="@+id/connect"
@@ -18,7 +18,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentEnd="true"
-        android:background="#fff" />
+        android:background="#fff"
+        android:elevation="1dp"
+        android:elegantTextHeight="false" />
     <Switch
         android:id="@+id/navigate"
         android:text="Navigate"
@@ -30,7 +32,8 @@
         android:layout_below="@+id/connect"
         android:layout_alignParentLeft="true"
         android:layout_alignParentEnd="true"
-        android:background="#fff" />
+        android:background="#fff"
+        android:elevation="1dp" />
     <Switch
         android:id="@+id/led"
         android:text="LED"
@@ -42,7 +45,8 @@
         android:layout_below="@+id/navigate"
         android:layout_alignParentLeft="true"
         android:layout_alignParentEnd="true"
-        android:background="#fff" />
+        android:background="#fff"
+        android:elevation="1dp" />
 
     <RelativeLayout
         android:id="@+id/LayoutBuzzer"
@@ -50,9 +54,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/led"
-        android:padding="5dp"
+        android:padding="2dp"
         android:layout_marginTop="1dp"
-        android:background="#fff" >
+        android:background="#fff"
+        android:elevation="1dp" >
 
         <TextView
             android:layout_width="wrap_content"
@@ -62,7 +67,7 @@
             android:id="@+id/textView"
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
-            android:layout_marginStart="5dp" />
+            android:layout_marginStart="7dp" />
 
         <Button
             android:id="@+id/buzzer"
@@ -82,50 +87,46 @@
         android:layout_below="@+id/LayoutBuzzer"
         android:layout_marginTop="70dp" >
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ImageButton
+            android:id="@+id/buttonForward"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:layout_centerHorizontal="true"
-            android:text="Forward"
-            android:id="@+id/buttonForward" />
+            android:src="@drawable/ic_up"
+            android:elevation="2dp" />
     </RelativeLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/Row2"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/Row1">
+        android:layout_below="@+id/Row1"
+        android:layout_centerHorizontal="true">
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:text="Left"
-            android:id="@+id/buttonLeft" />
+        <ImageButton
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentStart="true"
+            android:src="@drawable/ic_left"
+            android:id="@+id/buttonLeft"
+            android:elevation="2dp" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:text="Right"
-            android:id="@+id/buttonRight" />
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/Row3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/Row2">
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ImageButton
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:layout_centerHorizontal="true"
-            android:text="Backward"
+            android:src="@drawable/ic_down"
             android:id="@+id/buttonBackward"
-            />
+            android:elevation="2dp" />
 
-    </RelativeLayout>
+        <ImageButton
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_right"
+            android:id="@+id/buttonRight"
+            android:elevation="2dp"/>
+
+    </LinearLayout>
 
 </RelativeLayout>
