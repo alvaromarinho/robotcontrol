@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.MotionEvent;
 import android.view.View.OnClickListener;
 import android.os.Bundle;
@@ -31,9 +32,10 @@ public class MainActivity extends Activity {
     Button Left;
     Button Right;
     Button Buzzer;
+    TextView BuzzerText;
 
     Switch Connect;
-    Switch Automatico;
+    Switch Navigate;
     Switch Led;
 
     TextView Result;
@@ -59,7 +61,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         Connect = (Switch) findViewById(R.id.connect);
-        Automatico = (Switch) findViewById(R.id.automatic);
+        Navigate = (Switch) findViewById(R.id.navigate);
         Led = (Switch) findViewById(R.id.led);
 
         Forward = (Button) findViewById(R.id.buttonForward);
@@ -67,8 +69,9 @@ public class MainActivity extends Activity {
         Left = (Button) findViewById(R.id.buttonLeft);
         Right = (Button) findViewById(R.id.buttonRight);
         Buzzer = (Button) findViewById(R.id.buzzer);
+        BuzzerText = (TextView) findViewById(R.id.textView);
 
-        Automatico.setEnabled(false);
+        Navigate.setEnabled(false);
         Led.setEnabled(false);
 
         Forward.setEnabled(false);
@@ -76,6 +79,7 @@ public class MainActivity extends Activity {
         Left.setEnabled(false);
         Right.setEnabled(false);
         Buzzer.setEnabled(false);
+        BuzzerText.setTextColor(Color.rgb(195, 195, 195));
 
         Connect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -85,14 +89,18 @@ public class MainActivity extends Activity {
                         Connect.setEnabled(false);
                         Toast.makeText(getApplicationContext(),
                                 "Conectado!", Toast.LENGTH_SHORT).show();
-                        Automatico.setEnabled(true);
+                        Navigate.setEnabled(true);
                         Led.setEnabled(true);
                         Buzzer.setEnabled(true);
+                        BuzzerText.setTextColor(Color.rgb(0, 0, 0));
+
                         Forward.setEnabled(true);
                         Backward.setEnabled(true);
                         Left.setEnabled(true);
                         Right.setEnabled(true);
+
                     } else {
+                        Connect.setChecked(false);
                         Toast.makeText(getApplicationContext(),
                                 "Não foi possivel conectar", Toast.LENGTH_SHORT).show();
                     }
@@ -106,6 +114,25 @@ public class MainActivity extends Activity {
                     dataToSend = "1";
                     writeData(dataToSend);
                 } else if (!Led.isChecked()) {
+                    dataToSend = "0";
+                    writeData(dataToSend);
+                }
+            }
+        });
+
+        Navigate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (Navigate.isChecked()) {
+                    dataToSend = "A";
+                    writeData(dataToSend);
+
+                    Forward.setEnabled(false);
+                    Backward.setEnabled(false);
+                    Left.setEnabled(false);
+                    Right.setEnabled(false);
+
+                } else if (!Navigate.isChecked()) {
                     dataToSend = "0";
                     writeData(dataToSend);
                 }
@@ -257,45 +284,35 @@ public class MainActivity extends Activity {
     public void beginListenForData()   {
         try {
             inStream = btSocket.getInputStream();
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
         }
 
-        Thread workerThread = new Thread(new Runnable()
-        {
-            public void run()
-            {
-                while(!Thread.currentThread().isInterrupted() && !stopWorker)
-                {
-                    try
-                    {
+        Thread workerThread = new Thread(new Runnable() {
+            public void run() {
+                while(!Thread.currentThread().isInterrupted() && !stopWorker) {
+                    try {
                         int bytesAvailable = inStream.available();
-                        if(bytesAvailable > 0)
-                        {
+                        if(bytesAvailable > 0) {
                             byte[] packetBytes = new byte[bytesAvailable];
                             inStream.read(packetBytes);
-                            for(int i=0;i<bytesAvailable;i++)
-                            {
+                            for(int i=0;i<bytesAvailable;i++) {
                                 byte b = packetBytes[i];
-                                if(b == delimiter)
-                                {
+                                if(b == delimiter) {
                                     byte[] encodedBytes = new byte[readBufferPosition];
                                     System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
                                     final String data = new String(encodedBytes, "US-ASCII");
                                     readBufferPosition = 0;
-                                    handler.post(new Runnable()
-                                    {
-                                        public void run()
-                                        {
-
+                                    handler.post(new Runnable() {
+                                        public void run() {
                                             if(Result.getText().toString().equals("..")) {
                                                 Result.setText(data);
-                                            } else {
+                                            }
+                                            else {
                                                 Result.append("\n"+data);
                                             }
-
 	                                        	/* You also can use Result.setText(data); it won't display multilines
 	                                        	*/
-
                                         }
                                     });
                                 }

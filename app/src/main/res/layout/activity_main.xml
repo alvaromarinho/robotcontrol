@@ -6,43 +6,81 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="#f6f6f6" >
 
     <Switch
         android:id="@+id/connect"
-        android:text="Conectado"
+        android:text="Connected"
         android:textSize="20dp"
         android:padding="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:background="#fff" />
     <Switch
-        android:id="@+id/automatic"
-        android:text="Automático"
+        android:id="@+id/navigate"
+        android:text="Navigate"
         android:textSize="20dp"
         android:padding="10dp"
+        android:layout_marginTop="1dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/connect"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:background="#fff" />
     <Switch
         android:id="@+id/led"
-        android:text="Acionar LED"
+        android:text="LED"
         android:textSize="20dp"
         android:padding="10dp"
+        android:layout_marginTop="1dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/automatic"
+        android:layout_below="@+id/navigate"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:background="#fff" />
+
+    <RelativeLayout
+        android:id="@+id/LayoutBuzzer"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/led"
+        android:padding="5dp"
+        android:layout_marginTop="1dp"
+        android:background="#fff" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Buzzer"
+            android:textSize="20dp"
+            android:id="@+id/textView"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginStart="5dp" />
+
+        <Button
+            android:id="@+id/buzzer"
+            android:text="Play"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" />
+
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/Row1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true" >
+        android:layout_below="@+id/LayoutBuzzer"
+        android:layout_marginTop="70dp" >
 
         <Button
             android:layout_width="wrap_content"
@@ -64,13 +102,6 @@
             android:layout_alignParentLeft="true"
             android:text="Left"
             android:id="@+id/buttonLeft" />
-
-        <Button
-            android:id="@+id/buzzer"
-            android:text="Tocar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true" />
 
         <Button
             android:layout_width="wrap_content"
