@@ -13,6 +13,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -22,15 +24,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
-public class MainActivity extends Activity implements OnClickListener {
+public class MainActivity extends Activity {
 
     Button Forward;
     Button Backward;
     Button Left;
     Button Right;
-    Button Connect;
-    ToggleButton OnOff;
     Button Buzzer;
+
+    Switch Connect;
+    Switch Automatico;
+    Switch Led;
 
     TextView Result;
     private String dataToSend;
@@ -54,18 +58,68 @@ public class MainActivity extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Connect = (Button) findViewById(R.id.connect);
-        OnOff = (ToggleButton) findViewById(R.id.tgOnOff);
-        Buzzer = (Button) findViewById(R.id.buzzer);
+        Connect = (Switch) findViewById(R.id.connect);
+        Automatico = (Switch) findViewById(R.id.automatic);
+        Led = (Switch) findViewById(R.id.led);
 
         Forward = (Button) findViewById(R.id.buttonForward);
         Backward = (Button) findViewById(R.id.buttonBackward);
         Left = (Button) findViewById(R.id.buttonLeft);
         Right = (Button) findViewById(R.id.buttonRight);
+        Buzzer = (Button) findViewById(R.id.buzzer);
 
-        Connect.setOnClickListener((View.OnClickListener) this);
-        OnOff.setOnClickListener((View.OnClickListener) this);
-        Buzzer.setOnClickListener((View.OnClickListener) this);
+        Automatico.setEnabled(false);
+        Led.setEnabled(false);
+
+        Forward.setEnabled(false);
+        Backward.setEnabled(false);
+        Left.setEnabled(false);
+        Right.setEnabled(false);
+        Buzzer.setEnabled(false);
+
+        Connect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (Connect.isChecked()) {
+                    if (Connect()) {
+                        Connect.setText("Conectado");
+                        Connect.setEnabled(false);
+                        Toast.makeText(getApplicationContext(),
+                                "Conectado!", Toast.LENGTH_SHORT).show();
+                        Automatico.setEnabled(true);
+                        Led.setEnabled(true);
+                        Buzzer.setEnabled(true);
+                        Forward.setEnabled(true);
+                        Backward.setEnabled(true);
+                        Left.setEnabled(true);
+                        Right.setEnabled(true);
+                    } else {
+                        Toast.makeText(getApplicationContext(),
+                                "Não foi possivel conectar", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+        Led.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (Led.isChecked()) {
+                    dataToSend = "1";
+                    writeData(dataToSend);
+                } else if (!Led.isChecked()) {
+                    dataToSend = "0";
+                    writeData(dataToSend);
+                }
+            }
+        });
+
+        Buzzer.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dataToSend = "Z";
+                writeData(dataToSend);
+            }
+        });
 
         Forward.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -84,57 +138,58 @@ public class MainActivity extends Activity implements OnClickListener {
             }
         });
 
-        Backward.setOnClickListener((View.OnClickListener) this);
-        Left.setOnClickListener((View.OnClickListener) this);
-        Right.setOnClickListener((View.OnClickListener) this);
-
-        OnOff.setEnabled(false);
-        Buzzer.setEnabled(false);
-        Forward.setEnabled(false);
-        Backward.setEnabled(false);
-        Left.setEnabled(false);
-        Right.setEnabled(false);
+        Backward.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        dataToSend = "B";
+                        writeData(dataToSend);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        dataToSend = "S";
+                        writeData(dataToSend);
+                        break;
+                }
+                return false;
+            }
+        });
+        Left.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        dataToSend = "L";
+                        writeData(dataToSend);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        dataToSend = "S";
+                        writeData(dataToSend);
+                        break;
+                }
+                return false;
+            }
+        });
+        Right.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        dataToSend = "R";
+                        writeData(dataToSend);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        dataToSend = "S";
+                        writeData(dataToSend);
+                        break;
+                }
+                return false;
+            }
+        });
 
         CheckBt();
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
 
-    }
-
-    @Override
-    public void onClick(View control) {
-        switch (control.getId()) {
-            case R.id.connect:
-                if (Connect()) {
-                    Connect.setText("Conectado");
-                    Connect.setEnabled(false);
-                    Toast.makeText(getApplicationContext(),
-                            "Conectado!", Toast.LENGTH_SHORT).show();
-                    OnOff.setEnabled(true);
-                    Buzzer.setEnabled(true);
-                    Forward.setEnabled(true);
-                    Backward.setEnabled(true);
-                    Left.setEnabled(true);
-                    Right.setEnabled(true);
-                }
-                else {
-                    Toast.makeText(getApplicationContext(),
-                            "Não foi possivel conectar", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case R.id.tgOnOff:
-                if (OnOff.isChecked()) {
-                    dataToSend = "1";
-                    writeData(dataToSend);
-                } else if (!OnOff.isChecked()) {
-                    dataToSend = "0";
-                    writeData(dataToSend);
-                }
-                break;
-            case R.id.buzzer:
-                dataToSend = "Z";
-                writeData(dataToSend);
-                break;
-        }
     }
 
     private void CheckBt() {
