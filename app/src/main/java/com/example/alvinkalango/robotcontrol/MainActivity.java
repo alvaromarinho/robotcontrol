@@ -107,24 +107,12 @@ public class MainActivity extends Activity {
                 }
             }
         });
-        Led.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (Led.isChecked()) {
-                    dataToSend = "1";
-                    writeData(dataToSend);
-                } else if (!Led.isChecked()) {
-                    dataToSend = "0";
-                    writeData(dataToSend);
-                }
-            }
-        });
 
         Navigate.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (Navigate.isChecked()) {
-                    dataToSend = "A";
+                    dataToSend = "N";
                     writeData(dataToSend);
 
                     Forward.setEnabled(false);
@@ -133,6 +121,19 @@ public class MainActivity extends Activity {
                     Right.setEnabled(false);
 
                 } else if (!Navigate.isChecked()) {
+                    dataToSend = "0";
+                    writeData(dataToSend);
+                }
+            }
+        });
+
+        Led.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (Led.isChecked()) {
+                    dataToSend = "1";
+                    writeData(dataToSend);
+                } else if (!Led.isChecked()) {
                     dataToSend = "0";
                     writeData(dataToSend);
                 }
