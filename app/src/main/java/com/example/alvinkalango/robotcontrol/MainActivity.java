@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View.OnClickListener;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +40,11 @@ public class MainActivity extends AppCompatActivity {
     Switch Connect;
     Switch Navigate;
     Switch Led;
+
+    ImageView Bt_icon;
+    ImageView Nav_icon;
+    ImageView Led_icon;
+    ImageView Buz_icon;
 
     TextView Result;
     private String dataToSend;
@@ -64,24 +71,36 @@ public class MainActivity extends AppCompatActivity {
         Connect = (Switch) findViewById(R.id.connect);
         Navigate = (Switch) findViewById(R.id.navigate);
         Led = (Switch) findViewById(R.id.led);
+        Buzzer = (Button) findViewById(R.id.buzzer);
+        BuzzerText = (TextView) findViewById(R.id.textView);
 
         Forward = (ImageButton) findViewById(R.id.buttonForward);
         Backward = (ImageButton) findViewById(R.id.buttonBackward);
         Left = (ImageButton) findViewById(R.id.buttonLeft);
         Right = (ImageButton) findViewById(R.id.buttonRight);
 
-        Buzzer = (Button) findViewById(R.id.buzzer);
-        BuzzerText = (TextView) findViewById(R.id.textView);
+        Bt_icon = (ImageView) findViewById(R.id.bt_icon);
+        Nav_icon = (ImageView) findViewById(R.id.nav_icon);
+        Led_icon = (ImageView) findViewById(R.id.led_icon);
+        Buz_icon = (ImageView) findViewById(R.id.buz_icon);
 
         Navigate.setEnabled(false);
         Led.setEnabled(false);
+        Buzzer.setEnabled(false);
+        BuzzerText.setTextColor(Color.parseColor("#C3C3C3"));
+        Nav_icon.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
+        Led_icon.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
+        Buz_icon.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
 
         Forward.setEnabled(false);
         Backward.setEnabled(false);
         Left.setEnabled(false);
         Right.setEnabled(false);
-        Buzzer.setEnabled(false);
-        BuzzerText.setTextColor(Color.rgb(195, 195, 195));
+
+        Forward.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
+        Backward.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
+        Left.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
+        Right.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
 
         Connect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -89,17 +108,27 @@ public class MainActivity extends AppCompatActivity {
                 if (isChecked) {
                     if (Connect()) {
                         Connect.setEnabled(false);
+                        Bt_icon.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
                         Toast.makeText(getApplicationContext(),
                                 "Connected!", Toast.LENGTH_SHORT).show();
+
                         Navigate.setEnabled(true);
                         Led.setEnabled(true);
                         Buzzer.setEnabled(true);
-                        BuzzerText.setTextColor(Color.rgb(0, 0, 0));
+                        BuzzerText.setTextColor(Color.parseColor("#000000"));
+                        Nav_icon.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
+                        Led_icon.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
+                        Buz_icon.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
 
                         Forward.setEnabled(true);
                         Backward.setEnabled(true);
                         Left.setEnabled(true);
                         Right.setEnabled(true);
+
+                        Forward.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
+                        Backward.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
+                        Left.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
+                        Right.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
 
                     } else {
                         Connect.setChecked(false);
@@ -124,6 +153,11 @@ public class MainActivity extends AppCompatActivity {
                     Left.setEnabled(false);
                     Right.setEnabled(false);
 
+                    Forward.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
+                    Backward.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
+                    Left.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
+                    Right.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
+
                 }
                 else {
                     dataToSend = "S";
@@ -135,6 +169,11 @@ public class MainActivity extends AppCompatActivity {
                     Backward.setEnabled(true);
                     Left.setEnabled(true);
                     Right.setEnabled(true);
+
+                    Forward.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
+                    Backward.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
+                    Left.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
+                    Right.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
                 }
             }
         });
