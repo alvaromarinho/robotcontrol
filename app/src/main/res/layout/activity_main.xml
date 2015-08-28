@@ -1,132 +1,200 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".MainActivity"
-    android:background="#f6f6f6">
+    android:orientation="vertical" >
 
-    <Switch
-        android:id="@+id/connect"
-        android:text="Connected"
-        android:textSize="20dp"
-        android:padding="10dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentEnd="true"
-        android:background="#fff"
-        android:elevation="1dp"
-        android:elegantTextHeight="false" />
-    <Switch
-        android:id="@+id/navigate"
-        android:text="Navigate"
-        android:textSize="20dp"
-        android:padding="10dp"
-        android:layout_marginTop="1dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/connect"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentEnd="true"
-        android:background="#fff"
-        android:elevation="1dp" />
-    <Switch
-        android:id="@+id/led"
-        android:text="LED"
-        android:textSize="20dp"
-        android:padding="10dp"
-        android:layout_marginTop="1dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/navigate"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentEnd="true"
-        android:background="#fff"
-        android:elevation="1dp" />
-
-    <RelativeLayout
-        android:id="@+id/LayoutBuzzer"
-        android:orientation="horizontal"
+    <LinearLayout
+        android:id="@+id/Layout2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/led"
-        android:padding="2dp"
-        android:layout_marginTop="1dp"
-        android:background="#fff"
-        android:elevation="1dp" >
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:layout_weight="3" >
 
-        <TextView
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:id="@+id/LayoutConnect"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Buzzer"
-            android:textSize="20dp"
-            android:id="@+id/textView"
-            android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:layout_marginStart="7dp" />
+            android:padding="8dp"
+            android:elevation="1dp"
+            android:background="#fff" >
 
-        <Button
-            android:id="@+id/buzzer"
-            android:text="Play"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
+            <ImageView
+                android:id="@+id/bt_icon"
+                android:src="@drawable/ic_bluetooth"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+            <Switch
+                android:id="@+id/connect"
+                android:text="Connected"
+                android:textSize="20dp"
+                android:padding="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_toRightOf="@+id/bt_icon"
+                android:layout_marginLeft="8dp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/LayoutNav"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true" />
+            android:padding="8dp"
+            android:layout_marginTop="1dp"
+            android:elevation="1dp"
+            android:background="#fff" >
 
-    </RelativeLayout>
+            <ImageView
+                android:id="@+id/nav_icon"
+                android:src="@drawable/ic_navigation"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
 
-    <RelativeLayout
-        android:id="@+id/Row1"
+            <Switch
+                android:id="@+id/navigate"
+                android:text="Navigate"
+                android:textSize="20dp"
+                android:padding="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_toRightOf="@+id/nav_icon"
+                android:layout_marginLeft="8dp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/LayoutLED"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:layout_marginTop="1dp"
+            android:elevation="1dp"
+            android:background="#fff" >
+
+            <ImageView
+                android:id="@+id/led_icon"
+                android:src="@drawable/ic_light"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+            <Switch
+                android:id="@+id/led"
+                android:text="LED"
+                android:textSize="20dp"
+                android:padding="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_toRightOf="@+id/led_icon"
+                android:layout_marginLeft="8dp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/LayoutBuz"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_marginTop="1dp"
+            android:background="#fff"
+            android:elevation="1dp" >
+
+            <ImageView
+                android:id="@+id/buz_icon"
+                android:src="@drawable/ic_buzz"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:textSize="20dp"
+                android:text="Buzzer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/buz_icon"
+                android:layout_marginLeft="16dp" />
+
+            <Button
+                android:id="@+id/buzzer"
+                android:text="Play"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/Layout1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/LayoutBuzzer"
-        android:layout_marginTop="70dp" >
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:layout_weight="2" >
 
         <ImageButton
             android:id="@+id/buttonForward"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_centerHorizontal="true"
             android:src="@drawable/ic_up"
-            android:elevation="2dp" />
-    </RelativeLayout>
+            android:elevation="2dp"
+            android:layout_gravity="center_horizontal" />
 
-    <LinearLayout
-        android:id="@+id/Row2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/Row1"
-        android:layout_centerHorizontal="true">
+        <RelativeLayout
+            android:id="@+id/Row2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <ImageButton
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_alignParentStart="true"
-            android:src="@drawable/ic_left"
-            android:id="@+id/buttonLeft"
-            android:elevation="2dp" />
+            <ImageButton
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/ic_left"
+                android:id="@+id/buttonLeft"
+                android:elevation="2dp"
+                android:layout_toStartOf="@+id/buttonBackward" />
 
-        <ImageButton
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_centerHorizontal="true"
-            android:src="@drawable/ic_down"
-            android:id="@+id/buttonBackward"
-            android:elevation="2dp" />
+            <ImageButton
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/ic_down"
+                android:id="@+id/buttonBackward"
+                android:elevation="2dp"
+                android:layout_centerHorizontal="true" />
 
-        <ImageButton
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_alignParentEnd="true"
-            android:src="@drawable/ic_right"
-            android:id="@+id/buttonRight"
-            android:elevation="2dp"/>
+            <ImageButton
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/ic_right"
+                android:id="@+id/buttonRight"
+                android:elevation="2dp"
+                android:layout_toEndOf="@+id/buttonBackward" />
+
+        </RelativeLayout>
 
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>
