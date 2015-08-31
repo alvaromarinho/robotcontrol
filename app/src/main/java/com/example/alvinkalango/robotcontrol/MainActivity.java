@@ -1,16 +1,17 @@
 package com.example.alvinkalango.robotcontrol;
 
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View.OnClickListener;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,45 +24,25 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
-    ImageButton Forward;
-    ImageButton Backward;
-    ImageButton Left;
-    ImageButton Right;
-
+    ProgressDialog progress;
+    ImageButton Forward, Backward, Left, Right;
     Button Buzzer;
     TextView BuzzerText;
+    Switch Connect, Navigate, Led;
+    ImageView Bt_icon, Nav_icon, Led_icon, Buz_icon;
 
-    Switch Connect;
-    Switch Navigate;
-    Switch Led;
-
-    ImageView Bt_icon;
-    ImageView Nav_icon;
-    ImageView Led_icon;
-    ImageView Buz_icon;
-
-    TextView Result;
     private String dataToSend;
-
-    private static final String TAG = "Jon";
     private BluetoothAdapter mBluetoothAdapter = null;
     private BluetoothSocket btSocket = null;
     private OutputStream outStream = null;
     private static String address = "98:D3:31:B4:35:0E";
     private static final UUID MY_UUID = UUID
             .fromString("00001101-0000-1000-8000-00805F9B34FB");
-    private InputStream inStream = null;
-    Handler handler = new Handler();
-    byte delimiter = 10;
-    boolean stopWorker = false;
-    int readBufferPosition = 0;
-    byte[] readBuffer = new byte[1024];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,57 +65,18 @@ public class MainActivity extends AppCompatActivity {
         Led_icon = (ImageView) findViewById(R.id.led_icon);
         Buz_icon = (ImageView) findViewById(R.id.buz_icon);
 
-        Navigate.setEnabled(false);
-        Led.setEnabled(false);
-        Buzzer.setEnabled(false);
-        BuzzerText.setTextColor(Color.parseColor("#C3C3C3"));
-        Nav_icon.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
-        Led_icon.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
-        Buz_icon.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
-
-        Forward.setEnabled(false);
-        Backward.setEnabled(false);
-        Left.setEnabled(false);
-        Right.setEnabled(false);
-
-        Forward.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
-        Backward.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
-        Left.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
-        Right.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
+        setAllOff();
 
         Connect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    if (Connect()) {
-                        Connect.setEnabled(false);
-                        Bt_icon.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
-                        Toast.makeText(getApplicationContext(),
-                                "Connected!", Toast.LENGTH_SHORT).show();
-
-                        Navigate.setEnabled(true);
-                        Led.setEnabled(true);
-                        Buzzer.setEnabled(true);
-                        BuzzerText.setTextColor(Color.parseColor("#000000"));
-                        Nav_icon.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
-                        Led_icon.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
-                        Buz_icon.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
-
-                        Forward.setEnabled(true);
-                        Backward.setEnabled(true);
-                        Left.setEnabled(true);
-                        Right.setEnabled(true);
-
-                        Forward.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
-                        Backward.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
-                        Left.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
-                        Right.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
-
-                    } else {
-                        Connect.setChecked(false);
-                        Toast.makeText(getApplicationContext(),
-                                "Could not connect!", Toast.LENGTH_SHORT).show();
-                    }
+                    new ConnectBT().execute();
+                    setAllOn();
+                }
+                else {
+                    Disconnect();
+                    setAllOff();
                 }
             }
         });
@@ -148,16 +90,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(),
                             "Auto mode activated!", Toast.LENGTH_SHORT).show();
 
-                    Forward.setEnabled(false);
-                    Backward.setEnabled(false);
-                    Left.setEnabled(false);
-                    Right.setEnabled(false);
-
-                    Forward.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
-                    Backward.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
-                    Left.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
-                    Right.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
-
+                    setDirectionalOff();
                 }
                 else {
                     dataToSend = "S";
@@ -165,15 +98,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(),
                             "Auto mode deactivated", Toast.LENGTH_SHORT).show();
 
-                    Forward.setEnabled(true);
-                    Backward.setEnabled(true);
-                    Left.setEnabled(true);
-                    Right.setEnabled(true);
-
-                    Forward.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
-                    Backward.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
-                    Left.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
-                    Right.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
+                    setDirectionalOn();
                 }
             }
         });
@@ -181,10 +106,10 @@ public class MainActivity extends AppCompatActivity {
         Led.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (Led.isChecked()) {
+                if (isChecked) {
                     dataToSend = "1";
                     writeData(dataToSend);
-                } else if (!Led.isChecked()) {
+                } else {
                     dataToSend = "0";
                     writeData(dataToSend);
                 }
@@ -266,11 +191,61 @@ public class MainActivity extends AppCompatActivity {
         });
 
         CheckBt();
-        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
-
     }
 
-    private void CheckBt() {
+    public void setAllOff(){
+        Connect.setChecked(false);
+
+        Navigate.setEnabled(false);
+        Led.setEnabled(false);
+        Buzzer.setEnabled(false);
+        BuzzerText.setTextColor(Color.parseColor("#C3C3C3"));
+        Nav_icon.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
+        Led_icon.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
+        Buz_icon.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
+
+        setDirectionalOff();
+    }
+
+    public void setAllOn() {
+        Connect.setChecked(true);
+
+        Navigate.setEnabled(true);
+        Led.setEnabled(true);
+        Buzzer.setEnabled(true);
+        BuzzerText.setTextColor(Color.parseColor("#000000"));
+        Nav_icon.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
+        Led_icon.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
+        Buz_icon.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
+
+        setDirectionalOn();
+    }
+
+    public void setDirectionalOff(){
+        Forward.setEnabled(false);
+        Backward.setEnabled(false);
+        Left.setEnabled(false);
+        Right.setEnabled(false);
+
+        Forward.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
+        Backward.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
+        Left.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
+        Right.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
+    }
+
+    public void setDirectionalOn(){
+        Forward.setEnabled(true);
+        Backward.setEnabled(true);
+        Left.setEnabled(true);
+        Right.setEnabled(true);
+
+        Forward.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
+        Backward.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
+        Left.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
+        Right.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
+    }
+
+    protected void CheckBt() {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         if (mBluetoothAdapter == null) {
@@ -284,27 +259,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public boolean Connect() {
-        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
-        mBluetoothAdapter.cancelDiscovery();
-        try {
-            btSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
-            btSocket.connect();
+    protected void Disconnect(){
+        if (outStream != null) {
+            try {
+                outStream.close();
+            }
+            catch (Exception e) {}
+            outStream = null;
         }
-        catch (IOException e) {
+
+        if (btSocket != null) {
             try {
                 btSocket.close();
-            } catch (IOException e2) {
-                return false;
             }
-            return false;
+            catch (Exception e) {}
+            btSocket = null;
         }
-
-        beginListenForData();
-        return true;
     }
 
-    private void writeData(String data) {
+    protected void writeData(String data) {
         try {
             outStream = btSocket.getOutputStream();
         } catch (IOException e) {
@@ -326,64 +299,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        try {
-            btSocket.close();
-        } catch (IOException e) {
-        }
-    }
-
-    public void beginListenForData()   {
-        try {
-            inStream = btSocket.getInputStream();
-        }
-        catch (IOException e) {
-        }
-
-        Thread workerThread = new Thread(new Runnable() {
-            public void run() {
-                while(!Thread.currentThread().isInterrupted() && !stopWorker) {
-                    try {
-                        int bytesAvailable = inStream.available();
-                        if(bytesAvailable > 0) {
-                            byte[] packetBytes = new byte[bytesAvailable];
-                            inStream.read(packetBytes);
-                            for(int i=0;i<bytesAvailable;i++) {
-                                byte b = packetBytes[i];
-                                if(b == delimiter) {
-                                    byte[] encodedBytes = new byte[readBufferPosition];
-                                    System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
-                                    final String data = new String(encodedBytes, "US-ASCII");
-                                    readBufferPosition = 0;
-                                    handler.post(new Runnable() {
-                                        public void run() {
-                                            if(Result.getText().toString().equals("..")) {
-                                                Result.setText(data);
-                                            }
-                                            else {
-                                                Result.append("\n"+data);
-                                            }
-	                                        	/* You also can use Result.setText(data); it won't display multilines
-	                                        	*/
-                                        }
-                                    });
-                                }
-                                else
-                                {
-                                    readBuffer[readBufferPosition++] = b;
-                                }
-                            }
-                        }
-                    }
-                    catch (IOException ex)
-                    {
-                        stopWorker = true;
-                    }
-                }
-            }
-        });
-
-        workerThread.start();
+        Disconnect();
     }
 
     @Override
@@ -408,4 +324,42 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private class ConnectBT extends AsyncTask<Void, Void, Void> {
+
+        private boolean ConnectSuccess = true; //if it's here, it's almost connected
+
+        @Override
+        protected void onPreExecute() {
+            progress = ProgressDialog.show(MainActivity.this, "Connecting...", "Please wait!!!");  //show a progress dialog
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+            mBluetoothAdapter.cancelDiscovery();
+            try {
+                btSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
+                btSocket.connect();
+            }
+            catch (IOException e) {
+                ConnectSuccess = false;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) //after the doInBackground, it checks if everything went fine
+        {
+            super.onPostExecute(result);
+
+            if (!ConnectSuccess) {
+                Toast.makeText(getApplicationContext(),"Connection Failed! Try again.", Toast.LENGTH_SHORT).show();
+                setAllOff();
+            }
+            else {
+                Toast.makeText(getApplicationContext(), "Connected.", Toast.LENGTH_SHORT).show();
+            }
+            progress.dismiss();
+        }
+    }
 }
