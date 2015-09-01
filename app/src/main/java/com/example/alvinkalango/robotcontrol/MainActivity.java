@@ -1,9 +1,11 @@
 package com.example.alvinkalango.robotcontrol;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -29,6 +31,7 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
+    private AlertDialog alerta;
     ProgressDialog progress;
     ImageButton Forward, Backward, Left, Right;
     Button Buzzer;
@@ -189,8 +192,6 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-        CheckBt();
     }
 
     public void setAllOff(){
@@ -303,6 +304,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume(){
+        super.onResume();
+        CheckBt();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -311,14 +318,21 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_about) {
-            return true;
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("About");
+            builder.setMessage("App by Alvaro Marinho - alvaro.marinho@live.com");
+            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    alerta.dismiss();
+                }
+            });
+            alerta = builder.create();
+            alerta.show();
         }
 
         return super.onOptionsItemSelected(item);
