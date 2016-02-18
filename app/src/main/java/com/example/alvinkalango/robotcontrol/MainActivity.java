@@ -5,10 +5,15 @@ import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
@@ -29,15 +34,18 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     private AlertDialog alerta;
     ProgressDialog progress;
     ImageButton Forward, Backward, Left, Right;
     Button Buzzer;
     TextView BuzzerText;
-    Switch Connect, Navigate, Led;
-    ImageView Bt_icon, Nav_icon, Led_icon, Buz_icon;
+    Switch Connect, Navigate, Led, Acc;
+    ImageView Bt_icon, Nav_icon, Led_icon, Buz_icon, Acc_icon;
+
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
 
     private String dataToSend;
     private BluetoothAdapter mBluetoothAdapter = null;
@@ -55,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         Connect = (Switch) findViewById(R.id.connect);
         Navigate = (Switch) findViewById(R.id.navigate);
         Led = (Switch) findViewById(R.id.led);
+        Acc = (Switch) findViewById(R.id.acc);
         Buzzer = (Button) findViewById(R.id.buzzer);
         BuzzerText = (TextView) findViewById(R.id.textView);
 
@@ -66,7 +75,11 @@ public class MainActivity extends AppCompatActivity {
         Bt_icon = (ImageView) findViewById(R.id.bt_icon);
         Nav_icon = (ImageView) findViewById(R.id.nav_icon);
         Led_icon = (ImageView) findViewById(R.id.led_icon);
+        Acc_icon = (ImageView) findViewById(R.id.acc_icon);
         Buz_icon = (ImageView) findViewById(R.id.buz_icon);
+
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         setAllOff();
 
@@ -76,8 +89,7 @@ public class MainActivity extends AppCompatActivity {
                 if (isChecked) {
                     new ConnectBT().execute();
                     setAllOn();
-                }
-                else {
+                } else {
                     Disconnect();
                     setAllOff();
                 }
@@ -99,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
                     dataToSend = "S";
                     writeData(dataToSend);
                     Toast.makeText(getApplicationContext(),
-                            "Auto mode deactivated", Toast.LENGTH_SHORT).show();
+                            "Auto mode disabled", Toast.LENGTH_SHORT).show();
 
                     setDirectionalOn();
                 }
@@ -194,15 +206,32 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void Accelerometer(View view) {
+        boolean on = ((Switch) view).isChecked();
+        if (on) {
+            mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+            setDirectionalOff();
+            Toast.makeText(getApplicationContext(),
+                    "Accelerometer activated!", Toast.LENGTH_SHORT).show();
+        } else {
+            mSensorManager.unregisterListener(this);
+            setDirectionalOn();
+            Toast.makeText(getApplicationContext(),
+                    "Accelerometer disabled!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public void setAllOff(){
         Connect.setChecked(false);
 
         Navigate.setEnabled(false);
         Led.setEnabled(false);
+        Acc.setEnabled(false);
         Buzzer.setEnabled(false);
         BuzzerText.setTextColor(Color.parseColor("#C3C3C3"));
         Nav_icon.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
         Led_icon.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
+        Acc_icon.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
         Buz_icon.setColorFilter(0xffC3C3C3, PorterDuff.Mode.SRC_IN);
 
         setDirectionalOff();
@@ -213,10 +242,12 @@ public class MainActivity extends AppCompatActivity {
 
         Navigate.setEnabled(true);
         Led.setEnabled(true);
+        Acc.setEnabled(true);
         Buzzer.setEnabled(true);
         BuzzerText.setTextColor(Color.parseColor("#000000"));
         Nav_icon.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
         Led_icon.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
+        Acc_icon.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
         Buz_icon.setColorFilter(0xff000000, PorterDuff.Mode.SRC_IN);
 
         setDirectionalOn();
@@ -282,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             outStream = btSocket.getOutputStream();
         } catch (IOException e) {
-            Toast.makeText(getApplicationContext(), "Bug BEFORE Sending stuff",
+            Toast.makeText(getApplicationContext(), "Bug before sending message",
                     Toast.LENGTH_SHORT).show();
         }
 
@@ -292,7 +323,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             outStream.write(msgBuffer);
         } catch (IOException e) {
-            Toast.makeText(getApplicationContext(), "Bug while sending stuff",
+            Toast.makeText(getApplicationContext(), "Bug while sending message",
                     Toast.LENGTH_SHORT).show();
         }
     }
@@ -307,6 +338,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume(){
         super.onResume();
         CheckBt();
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        //Disconnect();
+        mSensorManager.unregisterListener(this);
+
     }
 
     @Override
@@ -336,6 +376,43 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+
+        Float x = event.values[0];
+        Float y = event.values[1];
+        Float z = event.values[2];
+
+        if( x > -3 && x < 3 && z > -4 && z < 4) {         // STOP
+            dataToSend = "S";
+            writeData(dataToSend);
+        }
+
+        if (z > 4 && z <= 9) { // FORWARD
+            dataToSend = "F";
+            writeData(dataToSend);
+        }
+
+        if (z < 0 && z >= -9) { // BACKWARD
+            dataToSend = "B";
+            writeData(dataToSend);
+        }
+
+        if (x > 3 && x <= 9) { // LEFT
+            dataToSend = "L";
+            writeData(dataToSend);
+        }
+
+        if (x < -2 && x >= -9) { // RIGHT
+            dataToSend = "R";
+            writeData(dataToSend);
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
 
     private class ConnectBT extends AsyncTask<Void, Void, Void> {
