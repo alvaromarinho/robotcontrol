@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     writeData(dataToSend);
                     Toast.makeText(getApplicationContext(),
                             "Auto mode activated!", Toast.LENGTH_SHORT).show();
-
+                    Acc.setEnabled(false);
                     setDirectionalOff();
                 }
                 else {
@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     writeData(dataToSend);
                     Toast.makeText(getApplicationContext(),
                             "Auto mode disabled", Toast.LENGTH_SHORT).show();
-
+                    Acc.setEnabled(true);
                     setDirectionalOn();
                 }
             }
@@ -211,10 +211,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (on) {
             mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
             setDirectionalOff();
+            Navigate.setEnabled(false);
             Toast.makeText(getApplicationContext(),
                     "Accelerometer activated!", Toast.LENGTH_SHORT).show();
-        } else {
+        }
+        else {
             mSensorManager.unregisterListener(this);
+            Navigate.setEnabled(true);
             setDirectionalOn();
             Toast.makeText(getApplicationContext(),
                     "Accelerometer disabled!", Toast.LENGTH_SHORT).show();
@@ -338,13 +341,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onResume(){
         super.onResume();
         CheckBt();
-
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        //Disconnect();
+        dataToSend = "S";
+        writeData(dataToSend);
+
+        Acc.setChecked(false);
+        Navigate.setChecked(false);
+
+        Acc.setEnabled(true);
+        Navigate.setEnabled(true);
+
+        setDirectionalOn();
         mSensorManager.unregisterListener(this);
 
     }
@@ -390,7 +401,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             writeData(dataToSend);
         }
 
-        if (z > 4 && z <= 9) { // FORWARD
+        if (z > 5 && z <= 9) { // FORWARD
             dataToSend = "F";
             writeData(dataToSend);
         }
