@@ -352,13 +352,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onStop() {
         super.onStop();
 
-        Acc.setChecked(false);
-        Navigate.setChecked(false);
+        if (Acc.isChecked()) {
+            Acc.setChecked(false);
+            Navigate.setEnabled(true);
+            setDirectionalOn();
+        }
 
-        Acc.setEnabled(true);
-        Navigate.setEnabled(true);
+        if (Navigate.isChecked()) {
+            Navigate.setChecked(false);
+            Acc.setEnabled(true);
+            setDirectionalOn();
+        }
 
-        setDirectionalOn();
         mSensorManager.unregisterListener(this);
 
         if (statusConection) {
