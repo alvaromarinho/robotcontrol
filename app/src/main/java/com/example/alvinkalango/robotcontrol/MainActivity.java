@@ -47,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
 
+    boolean statusConection = false;
+
     private String dataToSend;
     private BluetoothAdapter mBluetoothAdapter = null;
     private BluetoothSocket btSocket = null;
@@ -88,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     new ConnectBT().execute();
+                    statusConection = true;
                     setAllOn();
                 } else {
                     Disconnect();
@@ -310,6 +313,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             catch (Exception e) {}
             btSocket = null;
         }
+
+        statusConection = false;
     }
 
     protected void writeData(String data) {
@@ -344,10 +349,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        dataToSend = "S";
-        writeData(dataToSend);
+    public void onStop() {
+        super.onStop();
 
         Acc.setChecked(false);
         Navigate.setChecked(false);
@@ -358,6 +361,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setDirectionalOn();
         mSensorManager.unregisterListener(this);
 
+        if (statusConection) {
+            dataToSend = "S";
+            writeData(dataToSend);
+        }
     }
 
     @Override
