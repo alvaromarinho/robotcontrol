@@ -1,4 +1,4 @@
-package com.example.alvinkalango.robotcontrol;
+package com.example.alvinkalango.rogcontrol;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
